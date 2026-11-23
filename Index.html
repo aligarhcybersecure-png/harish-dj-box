@@ -9,9 +9,8 @@
 body{font-family:Arial;background:#111;color:#fff;margin:0;padding-bottom:90px}
 header{background:red;padding:15px;text-align:center}
 header h1{margin:0;font-size:28px}
-.top-btns button{padding:10px 18px;border:none;border-radius:8px;font-weight:bold;background:#fff;font-size:16px}
 .card{background:#222;border-radius:12px;padding:12px;text-align:center;margin:12px}
-.card img{width:100%;height:200px;object-fit:cover;border-radius:8px;background:#333}
+.card img{width:100%;height:200px;object-fit:cover;border-radius:8px}
 .price{color:#0f0;font-weight:bold;font-size:22px}
 .card button{width:100%;padding:13px;margin-top:7px;border:none;border-radius:8px;font-weight:bold;font-size:16px;cursor:pointer}
 .addBtn{background:#25D366;color:#fff}
@@ -28,46 +27,28 @@ header h1{margin:0;font-size:28px}
 </style>
 </head>
 <body>
-<header><h1>🔊 HARISH DJ BOX 🔊</h1><p>Aligarh | Best Sound - Best Price | 📞 9368638452</p><div class="top-btns"><button onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</button></div></header>
-<div id="products"><p style="text-align:center">Loading...</p></div>
+<header><h1>🔊 HARISH DJ BOX 🔊</h1><p>Aligarh | Best Sound - Best Price | 📞 9368638452</p><p><button onclick="openCart()" style="padding:10px 18px;border:none;border-radius:8px;font-weight:bold">🛒 Cart (<span id="cartCount">0</span>)</button></p></header>
+
+<div class="card"><img src="https://picsum.photos/600/400?random=11"><h3>12 Inch Single DJ Box</h3><p>Home Party ke liye best - Aligarh</p><div class="price">₹4999</div><button class="addBtn" onclick="addToCart('12 Inch Single DJ Box',4999)">🛒 Cart Me Dalein</button><button class="waDirect" onclick="buyNow('12 Inch Single DJ Box',4999)">📲 Abhi Order Karein</button></div>
+
+<div class="card"><img src="https://picsum.photos/600/400?random=22"><h3>15 Inch Double DJ Box</h3><p>Shadi / DJ Night ke liye - Aligarh</p><div class="price">₹11999</div><button class="addBtn" onclick="addToCart('15 Inch Double DJ Box',11999)">🛒 Cart Me Dalein</button><button class="waDirect" onclick="buyNow('15 Inch Double DJ Box',11999)">📲 Abhi Order Karein</button></div>
+
+<div class="card"><img src="https://picsum.photos/600/400?random=33"><h3>Full DJ Setup Rent</h3><p>2 Box + Light + DJ - Per Night Aligarh</p><div class="price">₹2999</div><button class="addBtn" onclick="addToCart('Full DJ Setup Rent',2999)">🛒 Cart Me Dalein</button><button class="waDirect" onclick="buyNow('Full DJ Setup Rent',2999)">📲 Abhi Order Karein</button></div>
+
 <div id="cartBar"><div><b id="cartTotalText">Cart: 0 Item - ₹0</b></div><button onclick="openCart()">Cart Dekhein →</button></div>
+
 <div id="cartModal" class="popup"><div class="modalBox"><h2>🛒 Tumhara Cart</h2><div id="cartItems"></div><h3 id="cartTotal">Total: ₹0</h3><input id="custName" placeholder="Apna Naam"><input id="custAddr" placeholder="Address - Aligarh"><p>UPI: 9368638452@ptaxis</p><button class="payBtn" onclick="payNow()">💳 UPI Se Payment Karein</button><button class="waBtn" onclick="orderWhatsApp()">📲 WhatsApp Par Order Bhejo</button><button class="closeBtn" onclick="closeCart()">Band Karein</button></div></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-const firebaseConfig = {
-  apiKey: "PASTE_YOUR_API_KEY",
-  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://PASTE_YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId: "PASTE_YOUR_PROJECT",
-  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
-  messagingSenderId: "PASTE_YOUR_SENDER_ID",
-  appId: "PASTE_YOUR_APP_ID"
-};
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-let products = [];
-let cart = [];
-const defaultProducts = [
-{name:"12 Inch Single DJ Box", price:4999, desc:"Home Party ke liye best - Aligarh", img:"https://picsum.photos/600/400?random=11"},
-{name:"15 Inch Double DJ Box", price:11999, desc:"Shadi / DJ Night ke liye - Aligarh", img:"https://picsum.photos/600/400?random=22"},
-{name:"Full DJ Setup Rent", price:2999, desc:"2 Box + Light + DJ - Per Night Aligarh", img:"https://picsum.photos/600/400?random=33"}
-];
-function render(){
-let h=""; if(products.length==0) products=defaultProducts;
-products.forEach((p,i)=>{ h+=`<div class="card"><img src="${p.img}"><h3>${p.name}</h3><p>${p.desc}</p><div class="price">₹${p.price}</div><button class="addBtn" onclick="addToCart(${i})">🛒 Cart Me Dalein</button><button class="waDirect" onclick="buyNow(${i})">📲 Abhi Order Karein</button></div>`; });
-document.getElementById('products').innerHTML=h;
-}
-onValue(ref(db,'products'), (snap)=>{ if(snap.exists()){ products = Object.values(snap.val()); } else { products = defaultProducts; } render(); });
-window.addToCart = function(i){ let p=products[i]; let f=cart.find(x=>x.name===p.name); if(f) f.qty++; else cart.push({name:p.name, price:p.price, qty:1}); updateBar(); alert(p.name+" Cart me add ho gaya!"); }
-window.buyNow = function(i){ let p=products[i]; window.open("https://wa.me/919368638452?text=Namaste Harish Bhai! Mujhe Order Karna Hai%0A%0A"+encodeURIComponent(p.name)+" - ₹"+p.price+"%0AAddress: Aligarh",'_blank'); }
-window.openCart = function(){ let b=document.getElementById('cartItems'); let t=0, h=""; if(cart.length==0) h="<p>Cart Khali Hai</p>"; cart.forEach((c,i)=>{ t+=c.price*c.qty; h+=`<p><b>${c.name}</b><br>₹${c.price} x ${c.qty} = ₹${c.price*c.qty} <button onclick="removeItem(${i})" style="width:auto;padding:5px 10px">❌</button></p><hr>`; }); b.innerHTML=h; document.getElementById('cartTotal').innerText="Total: ₹"+t; document.getElementById('cartModal').style.display='block'; }
-window.removeItem = function(i){ cart.splice(i,1); updateBar(); openCart(); }
-window.closeCart = function(){ document.getElementById('cartModal').style.display='none'; }
-window.payNow = function(){ let t=0; cart.forEach(c=>t+=c.price*c.qty); if(t==0){alert("Pehle Cart me kuch dalo");return;} window.location.href="upi://pay?pa=9368638452@ptaxis&pn=Harish DJ Box&am="+t+"&cu=INR&tn=Order"; }
-window.orderWhatsApp = function(){ let n=document.getElementById('custName').value||"Customer"; let a=document.getElementById('custAddr').value||"Aligarh"; let m="Namaste Harish Bhai! Mujhe Order Karna Hai%0A%0AName: "+n+"%0AAddress: "+a+" - Aligarh%0A%0A"; let t=0; cart.forEach(c=>{ m+=c.name+" - ₹"+c.price+" x "+c.qty+" = ₹"+(c.price*c.qty)+"%0A"; t+=c.price*c.qty; }); m+="%0ATotal: ₹"+t; window.open("https://wa.me/919368638452?text="+m,'_blank'); }
-function updateBar(){ let t=0,c=0; cart.forEach(x=>{t+=x.price*x.qty;c+=x.qty;}); document.getElementById('cartCount').innerText=c; document.getElementById('cartTotalText').innerText="Cart: "+c+" Item - ₹"+t; }
+<script>
+var cart=[];
+function updateBar(){var t=0,c=0;for(var i=0;i<cart.length;i++){t+=cart[i].price*cart[i].qty;c+=cart[i].qty;}document.getElementById('cartCount').innerText=c;document.getElementById('cartTotalText').innerText="Cart: "+c+" Item - ₹"+t;}
+function addToCart(n,p){var f=null;for(var k=0;k<cart.length;k++){if(cart[k].name===n)f=cart[k];}if(f)f.qty++;else cart.push({name:n,price:p,qty:1});updateBar();alert(n+" Cart me add ho gaya!");}
+function buyNow(n,p){window.open("https://wa.me/919368638452?text=Namaste Harish Bhai! Mujhe Order Karna Hai%0A%0A"+encodeURIComponent(n)+" - ₹"+p+"%0AAddress: Aligarh",'_blank');}
+function openCart(){var b=document.getElementById('cartItems');var t=0,h="";if(cart.length==0)h="<p>Cart Khali Hai</p>";for(var i=0;i<cart.length;i++){t+=cart[i].price*cart[i].qty;h+="<p><b>"+cart[i].name+"</b><br>₹"+cart[i].price+" x "+cart[i].qty+" = ₹"+(cart[i].price*cart[i].qty)+" <button onclick='removeItem("+i+")' style='width:auto;padding:5px 10px'>❌</button></p><hr>";}b.innerHTML=h;document.getElementById('cartTotal').innerText="Total: ₹"+t;document.getElementById('cartModal').style.display='block';}
+function removeItem(i){cart.splice(i,1);updateBar();openCart();}
+function closeCart(){document.getElementById('cartModal').style.display='none';}
+function payNow(){var t=0;for(var i=0;i<cart.length;i++)t+=cart[i].price*cart[i].qty;if(t==0){alert("Pehle Cart me kuch dalo");return;}window.location.href="upi://pay?pa=9368638452@ptaxis&pn=Harish DJ Box&am="+t+"&cu=INR&tn=Order";}
+function orderWhatsApp(){var n=document.getElementById('custName').value||"Customer";var a=document.getElementById('custAddr').value||"Aligarh";var m="Namaste Harish Bhai! Mujhe Order Karna Hai%0A%0AName: "+n+"%0AAddress: "+a+" - Aligarh%0A%0A";var t=0;for(var i=0;i<cart.length;i++){m+=cart[i].name+" - ₹"+cart[i].price+" x "+cart[i].qty+" = ₹"+(cart[i].price*cart[i].qty)+"%0A";t+=cart[i].price*cart[i].qty;}m+="%0ATotal: ₹"+t;window.open("https://wa.me/919368638452?text="+m,'_blank');}
 </script>
 </body>
 </html>
