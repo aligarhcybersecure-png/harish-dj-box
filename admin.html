@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backend - Harish DJ Box</title>
+<style>
+body{font-family:Arial;background:#111;color:#fff;margin:0;padding:15px}
+.box{background:#222;padding:15px;border-radius:12px;margin:12px 0}
+input{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:1px solid #ccc;font-size:16px;box-sizing:border-box}
+button{width:100%;padding:13px;margin-top:8px;border:none;border-radius:8px;font-weight:bold;font-size:16px;cursor:pointer}
+.yellow{background:yellow;color:#000;padding:10px;border-radius:8px;font-weight:bold;text-align:center}
+.pcard{background:#333;padding:10px;border-radius:8px;margin:8px 0}
+.pcard img{width:100%;height:120px;object-fit:cover;border-radius:6px}
+.del{background:red;color:#fff}
+.save{background:#25D366;color:#fff}
+</style>
+</head>
+<body>
+<h1 style="text-align:center">👑 BACKEND - AUTO</h1>
+<p style="text-align:center">Yahan change karoge to turant Customer ko dikhega</p>
+<div class="yellow">Tum Backend me ho Harish Bhai!</div>
+<div id="loginBox" class="box"><h3>Password Dalein</h3><input id="pass" type="password" placeholder="harish123"><button style="background:red;color:#fff" onclick="login()">Login Karein</button></div>
+<div id="mainBox" style="display:none">
+<div class="box"><h3>➕ Naya Box Add Karo</h3><input id="pName" placeholder="Box Ka Naam"><input id="pPrice" type="number" placeholder="Price"><input id="pDesc" placeholder="Details"><input id="pImg" placeholder="Photo Link - khali chhodo to auto photo"><button class="save" onclick="addProduct()">✅ Save Karo - Sabko Dikh Jayega</button></div>
+<div class="box"><h3>📦 Tumhare Box</h3><div id="list"></div></div>
+<div class="box"><a href="index.html" style="color:#fff">← Customer Website Dekhein</a></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+const firebaseConfig = {
+  apiKey: "PASTE_YOUR_API_KEY",
+  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://PASTE_YOUR_PROJECT-default-rtdb.firebaseio.com",
+  projectId: "PASTE_YOUR_PROJECT",
+  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
+  messagingSenderId: "PASTE_YOUR_SENDER_ID",
+  appId: "PASTE_YOUR_APP_ID"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+let products = []; let keys = [];
+window.login = function(){ if(document.getElementById('pass').value==="harish123"){ document.getElementById('loginBox').style.display='none'; document.getElementById('mainBox').style.display='block'; alert("Welcome Harish Bhai!"); } else alert("Galat Password"); }
+onValue(ref(db,'products'), (snap)=>{ if(snap.exists()){ let data=snap.val(); keys=Object.keys(data); products=Object.values(data); } else { products=[]; keys=[]; } renderList(); });
+function renderList(){
+let h=""; if(products.length==0) h="<p>Abhi koi box nahi hai. Upar se add karo.</p>";
+products.forEach((p,i)=>{ h+=`<div class="pcard"><img src="${p.img}"><b>${p.name}</b><br>₹${p.price} - ${p.desc}<br><br>Price Badlo: <input id="newPrice${i}" type="number" value="${p.price}" style="width:120px;display:inline-block"> <button onclick="updatePrice(${i})" style="width:auto;padding:8px 12px;background:orange">Update</button> <button onclick="deleteProduct(${i})" class="del" style="width:auto;padding:8px 12px">Delete</button></div>`; });
+document.getElementById('list').innerHTML=h;
+}
+window.addProduct = function(){
+let name=document.getElementById('pName').value; let price=parseInt(document.getElementById('pPrice').value); let desc=document.getElementById('pDesc').value||"Aligarh"; let img=document.getElementById('pImg').value||"https://picsum.photos/600/400?random="+Math.floor(Math.random()*100);
+if(!name||!price){alert("Naam aur Price chahiye");return;}
+push(ref(db,'products'), {name, price, desc, img});
+alert("Ho gaya! Ab sabko dikh jayega");
+document.getElementById('pName').value=""; document.getElementById('pPrice').value=""; document.getElementById('pDesc').value=""; document.getElementById('pImg').value="";
+}
+window.updatePrice = function(i){ let newP=parseInt(document.getElementById('newPrice'+i).value); let p=products[i]; p.price=newP; set(ref(db,'products/'+keys[i]), p); alert("Price badal gaya! Customer ko ab ₹"+newP+" dikhega"); }
+window.deleteProduct = function(i){ if(confirm("Delete kar du?")){ remove(ref(db,'products/'+keys[i])); } }
+</script>
+</body>
+</html>
